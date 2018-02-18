@@ -13,7 +13,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
         ///
         static void Main(string[] args)
         {
-            ITransaction txn5 = SetupTransactions();
+            IClaimTransaction txn5 = SetupTransactions();
             IKeyStore keyStore = new KeyStore(Hmac.GenerateKey());
 
             IBlock block1 = new Block(0, keyStore, 3);
@@ -43,10 +43,10 @@ namespace BlockChainCourse.BlockWithProofOfWork
         private static void AddTransactionsToBlocksAndCalculateHashes(IBlock block1, IBlock block2, IBlock block3, IBlock block4)
         {
             block1.AddTransaction(txnPool.GetTransaction());
-            block1.AddTransaction(txnPool.GetTransaction());
-            block1.AddTransaction(txnPool.GetTransaction());
-            block1.AddTransaction(txnPool.GetTransaction());
 
+            block2.AddTransaction(txnPool.GetTransaction());
+            block2.AddTransaction(txnPool.GetTransaction());
+            block2.AddTransaction(txnPool.GetTransaction());
             block2.AddTransaction(txnPool.GetTransaction());
             block2.AddTransaction(txnPool.GetTransaction());
             block2.AddTransaction(txnPool.GetTransaction());
@@ -68,24 +68,45 @@ namespace BlockChainCourse.BlockWithProofOfWork
             block4.SetBlockHash(block3);
         }
 
-        private static ITransaction SetupTransactions()
+        private static IClaimTransaction SetupTransactions()
         {
-            ITransaction txn1 = new Transaction("ABC123", 1000.00m, DateTime.Now, "QWE123", 10000, ClaimType.TotalLoss);
-            ITransaction txn2 = new Transaction("VBG345", 2000.00m, DateTime.Now, "JKH567", 20000, ClaimType.TotalLoss);
-            ITransaction txn3 = new Transaction("XCF234", 3000.00m, DateTime.Now, "DH23ED", 30000, ClaimType.TotalLoss);
-            ITransaction txn4 = new Transaction("CBHD45", 4000.00m, DateTime.Now, "DH34K6", 40000, ClaimType.TotalLoss);
-            ITransaction txn5 = new Transaction("AJD345", 5000.00m, DateTime.Now, "28FNF4", 50000, ClaimType.TotalLoss);
-            ITransaction txn6 = new Transaction("QAX367", 6000.00m, DateTime.Now, "FJK676", 60000, ClaimType.TotalLoss);
-            ITransaction txn7 = new Transaction("CGO444", 7000.00m, DateTime.Now, "LKU234", 70000, ClaimType.TotalLoss);
-            ITransaction txn8 = new Transaction("PLO254", 8000.00m, DateTime.Now, "VBN456", 80000, ClaimType.TotalLoss);
-            ITransaction txn9 = new Transaction("ABC123", 1000.00m, DateTime.Now, "QWE123", 10000, ClaimType.TotalLoss);
-            ITransaction txn10 = new Transaction("VBG345", 2000.00m, DateTime.Now, "JKH567", 20000, ClaimType.TotalLoss);
-            ITransaction txn11 = new Transaction("XCF234", 3000.00m, DateTime.Now, "DH23ED", 30000, ClaimType.TotalLoss);
-            ITransaction txn12 = new Transaction("CBHD45", 4000.00m, DateTime.Now, "DH34K6", 40000, ClaimType.TotalLoss);
-            ITransaction txn13 = new Transaction("AJD345", 5000.00m, DateTime.Now, "28FNF4", 50000, ClaimType.TotalLoss);
-            ITransaction txn14 = new Transaction("QAX367", 6000.00m, DateTime.Now, "FJK676", 60000, ClaimType.TotalLoss);
-            ITransaction txn15 = new Transaction("CGO444", 7000.00m, DateTime.Now, "LKU234", 70000, ClaimType.TotalLoss);
-            ITransaction txn16 = new Transaction("PLO254", 8000.00m, DateTime.Now, "VBN456", 80000, ClaimType.TotalLoss);
+            IKeyStore address0 = new KeyStore(Hmac.GenerateKey());
+
+            IKeyStore address1 = new KeyStore(Hmac.GenerateKey());
+
+            IClaimTransaction txn1 = new ClaimTransaction(address0, "ADDRESS1","ABC123", 1000000000.00m, DateTime.Now, "QWE123", 10000, ClaimType.TotalLoss);
+            IClaimTransaction txn2 = new ClaimTransaction(address1, "ADDRESS2", "VBG345", 2000.00m, DateTime.Now, "JKH567", 20000, ClaimType.TotalLoss);
+            IClaimTransaction txn3 = new ClaimTransaction(address1, "ADDRESS2", "XCF234", 3000.00m, DateTime.Now, "DH23ED", 30000, ClaimType.TotalLoss);
+            IClaimTransaction txn4 = new ClaimTransaction(address1, "ADDRESS2", "CBHD45", 4000.00m, DateTime.Now, "DH34K6", 40000, ClaimType.TotalLoss);
+            IClaimTransaction txn5 = new ClaimTransaction(address1, "ADDRESS2", "AJD345", 5000.00m, DateTime.Now, "28FNF4", 50000, ClaimType.TotalLoss);
+            IClaimTransaction txn6 = new ClaimTransaction(address1, "ADDRESS2", "QAX367", 6000.00m, DateTime.Now, "FJK676", 60000, ClaimType.TotalLoss);
+            IClaimTransaction txn7 = new ClaimTransaction(address1, "ADDRESS2", "CGO444", 7000.00m, DateTime.Now, "LKU234", 70000, ClaimType.TotalLoss);
+            IClaimTransaction txn8 = new ClaimTransaction(address1, "ADDRESS2", "PLO254", 8000.00m, DateTime.Now, "VBN456", 80000, ClaimType.TotalLoss);
+            IClaimTransaction txn9 = new ClaimTransaction(address1, "ADDRESS2", "ABC123", 1000.00m, DateTime.Now, "QWE123", 10000, ClaimType.TotalLoss);
+            IClaimTransaction txn10 = new ClaimTransaction(address1, "ADDRESS2", "VBG345", 2000.00m, DateTime.Now, "JKH567", 20000, ClaimType.TotalLoss);
+            IClaimTransaction txn11 = new ClaimTransaction(address1, "ADDRESS2", "XCF234", 3000.00m, DateTime.Now, "DH23ED", 30000, ClaimType.TotalLoss);
+            IClaimTransaction txn12 = new ClaimTransaction(address1, "ADDRESS2", "CBHD45", 4000.00m, DateTime.Now, "DH34K6", 40000, ClaimType.TotalLoss);
+            IClaimTransaction txn13 = new ClaimTransaction(address1, "ADDRESS2", "AJD345", 5000.00m, DateTime.Now, "28FNF4", 50000, ClaimType.TotalLoss);
+            IClaimTransaction txn14 = new ClaimTransaction(address1, "ADDRESS2", "QAX367", 6000.00m, DateTime.Now, "FJK676", 60000, ClaimType.TotalLoss);
+            IClaimTransaction txn15 = new ClaimTransaction(address1, "ADDRESS2", "CGO444", 7000.00m, DateTime.Now, "LKU234", 70000, ClaimType.TotalLoss);
+            IClaimTransaction txn16 = new ClaimTransaction(address1, "ADDRESS2", "PLO254", 8000.00m, DateTime.Now, "VBN456", 80000, ClaimType.TotalLoss);
+
+            txn1.SetTransactionHash(null);
+            txn2.SetTransactionHash(txn1);
+            txn3.SetTransactionHash(txn1);
+            txn4.SetTransactionHash(txn1);
+            txn5.SetTransactionHash(txn1);
+            txn6.SetTransactionHash(txn1);
+            txn7.SetTransactionHash(txn1);
+            txn8.SetTransactionHash(txn1);
+            txn9.SetTransactionHash(txn1);
+            txn10.SetTransactionHash(txn1);
+            txn11.SetTransactionHash(txn1);
+            txn12.SetTransactionHash(txn1);
+            txn13.SetTransactionHash(txn1);
+            txn14.SetTransactionHash(txn1);
+            txn15.SetTransactionHash(txn1);
+            txn16.SetTransactionHash(txn1);
 
             txnPool.AddTransaction(txn1);
             txnPool.AddTransaction(txn2);

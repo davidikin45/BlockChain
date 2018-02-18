@@ -16,14 +16,14 @@ namespace BlockChainCourse.BlockWithProofOfWork
             DigitalSignature.AssignNewKey();
         }
 
-        public string SignBlock(string blockHash)
+        public string Sign(string hash)
         {
-            return Convert.ToBase64String(DigitalSignature.SignData(Convert.FromBase64String(blockHash)));
+            return Convert.ToBase64String(DigitalSignature.SignData(Convert.FromBase64String(hash)));
         }
 
-        public bool VerifyBlock(string blockHash, string signature)
+        public bool Verify(string hash, string signature)
         {
-            return DigitalSignature.VerifySignature(Convert.FromBase64String(blockHash), Convert.FromBase64String(signature));  
+            return DigitalSignature.VerifySignature(Convert.FromBase64String(hash), Convert.FromBase64String(signature));  
         }
     }
 }

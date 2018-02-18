@@ -61,7 +61,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
             }
             else
             {
-                completeBlockHash = Convert.ToBase64String(HashData.ComputeHashSha256(Encoding.UTF8.GetBytes(combined)));
+                completeBlockHash = Convert.ToBase64String(Hmac.ComputeHmacsha256(Encoding.UTF8.GetBytes(combined), KeyStore.AuthenticatedHashKey));
             }
 
             return completeBlockHash;
@@ -89,7 +89,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
 
             if (KeyStore != null)
             {
-                BlockSignature = KeyStore.SignBlock(BlockHash);
+                BlockSignature = KeyStore.Sign(BlockHash);
             }
         }
 
@@ -99,7 +99,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
 
             foreach (ITransaction txn in Transaction)
             {
-                merkleTree.AppendLeaf(MerkleHash.Create(txn.CalculateTransactionHash()));
+                merkleTree.AppendLeaf(MerkleHash.Create(txn.TransactionId));
             }
 
             merkleTree.BuildTree();
@@ -150,13 +150,13 @@ namespace BlockChainCourse.BlockWithProofOfWork
 
             BuildMerkleTree();
 
-            validSignature = KeyStore.VerifyBlock(BlockHash, BlockSignature);
+            validSignature = KeyStore.Verify(BlockHash, BlockSignature);
 
             // Is this a valid block and transaction
             //string newBlockHash = CalculateBlockHash(prevBlockHash);
             string newBlockHash = Convert.ToBase64String(HashData.ComputeHashSha256(Encoding.UTF8.GetBytes(Nonce + CalculateBlockHash(prevBlockHash))));
 
-            validSignature = KeyStore.VerifyBlock(newBlockHash, BlockSignature);
+            validSignature = KeyStore.Verify(newBlockHash, BlockSignature);
 
             if (newBlockHash != BlockHash)
             {
