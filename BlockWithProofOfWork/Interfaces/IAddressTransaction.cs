@@ -6,10 +6,12 @@ namespace BlockChainCourse.BlockWithProofOfWork
     {
         string ToAddress { get; }
         string PreviousTransactionId { get; set; }
+        IAddressTransaction PreviousTransaction { get; set; }
         string TransactionSignature { get; }
 
         IKeyStore KeyStoreFromAddress { get; }
 
-        void SetTransactionHash(ITransaction parent);
+        void SetTransactionHash(IAddressTransaction parent);
+        bool IsValidChain(string prevBlockHash, bool verbose);
     }
 }

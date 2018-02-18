@@ -14,7 +14,10 @@ namespace BlockChainCourse.BlockWithProofOfWork
         static void Main(string[] args)
         {
             IClaimTransaction txn5 = SetupTransactions();
-            IKeyStore keyStore = new KeyStore(Hmac.GenerateKey());
+
+            //Only needed if we want it to be a private blockchain
+            //IKeyStore keyStore = new KeyStore(Hmac.GenerateKey());
+            IKeyStore keyStore = null;
 
             IBlock block1 = new Block(0, keyStore, 3);
             IBlock block2 = new Block(1, keyStore, 3);
