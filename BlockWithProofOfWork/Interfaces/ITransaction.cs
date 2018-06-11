@@ -6,7 +6,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
     {
         string TransactionId { get; }
         DateTime CreatedDate { get; set; }
-        void SetTransactionHash();
-        string CalculateTransactionHash();
+        void SetTransactionHash(IKeyStore KeyStoreFromAddress);
+        string CalculateTransactionHash(IKeyStore KeyStoreFromAddress);
     }
 }

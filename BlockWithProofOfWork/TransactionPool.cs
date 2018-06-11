@@ -4,19 +4,19 @@ namespace BlockChainCourse.BlockWithProofOfWork
 {
     public class TransactionPool
     {
-        private readonly Queue<ITransaction> _queue;
+        private readonly Queue<IClaimTransaction> _queue;
 
         public TransactionPool()
         {
-            _queue = new Queue<ITransaction>();
+            _queue = new Queue<IClaimTransaction>();
         }
 
-        public void AddTransaction(ITransaction transaction)
+        public void AddTransaction(IClaimTransaction transaction)
         {
             _queue.Enqueue(transaction);
         }
 
-        public ITransaction GetTransaction()
+        public IClaimTransaction GetTransaction()
         {
             return _queue.Dequeue();
         }

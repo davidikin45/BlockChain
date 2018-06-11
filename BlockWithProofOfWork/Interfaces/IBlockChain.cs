@@ -1,8 +1,8 @@
 ﻿namespace BlockChainCourse.BlockWithProofOfWork
 {
-    public interface IBlockChain
+    public interface IBlockChain<T> where T : ITransaction
     {
-        void AcceptBlock(IBlock block);
+        void AcceptBlock(IBlock<T> block);
         int NextBlockNumber { get; }
         void VerifyChain();
     }

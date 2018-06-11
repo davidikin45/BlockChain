@@ -43,8 +43,8 @@ namespace BlockChainCourse.Cryptography
 
             var key = Hmac.GenerateKey();
 
-            var hmacSha256Message = Hmac.ComputeHmacsha256(Encoding.UTF8.GetBytes(originalMessage), key);
-            var hmacSha256Message2 = Hmac.ComputeHmacsha256(Encoding.UTF8.GetBytes(originalMessage2), key);
+            var hmacSha256Message = Hmac.ComputeHmacSha256(Encoding.UTF8.GetBytes(originalMessage), key);
+            var hmacSha256Message2 = Hmac.ComputeHmacSha256(Encoding.UTF8.GetBytes(originalMessage2), key);
 
             Console.WriteLine();
             Console.WriteLine("SHA 256 HMAC");

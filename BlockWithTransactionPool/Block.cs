@@ -56,7 +56,7 @@ namespace BlockChainCourse.BlockWithTransactionPool
             }
             else
             {
-                completeBlockHash = Convert.ToBase64String(Hmac.ComputeHmacsha256(Encoding.UTF8.GetBytes(combined), KeyStore.AuthenticatedHashKey));
+                completeBlockHash = Convert.ToBase64String(Hmac.ComputeHmacSha256(Encoding.UTF8.GetBytes(combined), KeyStore.AuthenticatedHashKey));
             }
 
             return completeBlockHash;

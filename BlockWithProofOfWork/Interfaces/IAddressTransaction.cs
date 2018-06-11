@@ -4,14 +4,17 @@ namespace BlockChainCourse.BlockWithProofOfWork
 {
     public interface IAddressTransaction : ITransaction
     {
-        string ToAddress { get; }
+        //input
         string PreviousTransactionId { get; set; }
         IAddressTransaction PreviousTransaction { get; set; }
         string TransactionSignature { get; }
+        //IKeyStore KeyStoreFromAddress { get; } //This should be 
+        string FromAddressPublicKey { get; }
 
-        IKeyStore KeyStoreFromAddress { get; }
+        //output
+        string ToAddress { get; } //ToAddress publickey
 
-        void SetTransactionHash(IAddressTransaction parent);
+        void SetTransactionHash(IAddressTransaction parent, IKeyStore KeyStoreFromAddress);
         bool IsValidChain(string prevBlockHash, bool verbose);
     }
 }

@@ -7,9 +7,9 @@ using Clifton.Blockchain;
 
 namespace BlockChainCourse.BlockWithProofOfWork
 {
-    public class Block : IBlock
+    public class Block : IBlock<IClaimTransaction>
     {
-        public List<ITransaction> Transaction { get; private set; }
+        public List<IClaimTransaction> Transactions { get; private set; }
 
         // Set as part of the block creation process.
         public int BlockNumber { get; private set; }
@@ -20,7 +20,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
         public int Difficulty { get; private set; }
         public int Nonce { get; private set; }
 
-        public IBlock NextBlock { get; set; }
+        public IBlock<IClaimTransaction> NextBlock { get; set; }
         private MerkleTree merkleTree = new MerkleTree();
         public IKeyStore KeyStore { get; private set; }
 
@@ -29,7 +29,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
             BlockNumber = blockNumber;
 
             CreatedDate = DateTime.UtcNow;
-            Transaction = new List<ITransaction>();
+            Transactions = new List<IClaimTransaction>();
             Difficulty = miningDifficulty;
         }
 
@@ -38,14 +38,14 @@ namespace BlockChainCourse.BlockWithProofOfWork
             BlockNumber = blockNumber;
 
             CreatedDate = DateTime.UtcNow;
-            Transaction = new List<ITransaction>();
+            Transactions = new List<IClaimTransaction>();
             KeyStore = keystore;
             Difficulty = miningDifficulty;
         }
 
-        public void AddTransaction(ITransaction transaction)
+        public void AddTransaction(IClaimTransaction transaction)
         {
-            Transaction.Add(transaction);
+            Transactions.Add(transaction);
         }
 
         public string CalculateBlockHash(string previousBlockHash)
@@ -61,14 +61,14 @@ namespace BlockChainCourse.BlockWithProofOfWork
             }
             else
             {
-                completeBlockHash = Convert.ToBase64String(Hmac.ComputeHmacsha256(Encoding.UTF8.GetBytes(combined), KeyStore.AuthenticatedHashKey));
+                completeBlockHash = Convert.ToBase64String(Hmac.ComputeHmacSha256(Encoding.UTF8.GetBytes(combined), KeyStore.AuthenticatedHashKey));
             }
 
             return completeBlockHash;
         }
 
         // Set the block hash
-        public void SetBlockHash(IBlock parent)
+        public void SetBlockHash(IBlock<IClaimTransaction> parent)
         {
             if (parent != null)
             {
@@ -97,7 +97,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
         {
             merkleTree = new MerkleTree();
 
-            foreach (ITransaction txn in Transaction)
+            foreach (ITransaction txn in Transactions)
             {
                 merkleTree.AppendLeaf(MerkleHash.Create(txn.TransactionId));
             }
@@ -150,13 +150,19 @@ namespace BlockChainCourse.BlockWithProofOfWork
 
             BuildMerkleTree();
 
-            validSignature = KeyStore.Verify(BlockHash, BlockSignature);
+            if (KeyStore != null)
+            {
+                validSignature = KeyStore.Verify(BlockHash, BlockSignature);
+            }
+
 
             // Is this a valid block and transaction
             //string newBlockHash = CalculateBlockHash(prevBlockHash);
             string newBlockHash = Convert.ToBase64String(HashData.ComputeHashSha256(Encoding.UTF8.GetBytes(Nonce + CalculateBlockHash(prevBlockHash))));
-
-            validSignature = KeyStore.Verify(newBlockHash, BlockSignature);
+            if (KeyStore != null)
+            {
+                validSignature = KeyStore.Verify(newBlockHash, BlockSignature);
+            }
 
             if (newBlockHash != BlockHash)
             {

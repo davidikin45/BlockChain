@@ -11,7 +11,8 @@ namespace BlockChainCourse.BlockWithProofOfWork
         public string PreviousTransactionId { get; set; }
         public IAddressTransaction PreviousTransaction { get; set; }
         public string TransactionSignature { get; private set; }
-        public IKeyStore KeyStoreFromAddress { get; private set; }
+      //  public IKeyStore KeyStoreFromAddress { get; private set; }
+        public string FromAddressPublicKey { get; private set; }
 
         public string ToAddress { get; set; }
 
@@ -34,7 +35,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
 
         }
 
-        public ClaimTransaction(IKeyStore keyStoreFromAddress,
+        public ClaimTransaction(string fromAddressPublicKey,
                         string toAddress,
                         string claimNumber,
                         decimal settlementAmount,
@@ -43,7 +44,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
                         int mileage,
                         ClaimType claimType)
         {
-            KeyStoreFromAddress = keyStoreFromAddress;
+            FromAddressPublicKey = fromAddressPublicKey;
 
             ToAddress = toAddress;
 
@@ -57,12 +58,12 @@ namespace BlockChainCourse.BlockWithProofOfWork
             CreatedDate = DateTime.UtcNow;
         }
 
-        public void SetTransactionHash()
+        public void SetTransactionHash(IKeyStore KeyStoreFromAddress)
         {
-            SetTransactionHash(null);
+            SetTransactionHash(null, KeyStoreFromAddress);
         }
 
-        public void SetTransactionHash(IAddressTransaction parent)
+        public void SetTransactionHash(IAddressTransaction parent, IKeyStore KeyStoreFromAddress)
         {
             if (parent != null)
             {
@@ -76,7 +77,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
                 PreviousTransaction = null;
             }
 
-            var transactionHash = CalculateTransactionHash(PreviousTransactionId);
+            var transactionHash = CalculateTransactionHash(PreviousTransactionId, KeyStoreFromAddress);
             TransactionId = transactionHash;
 
             if (KeyStoreFromAddress != null)
@@ -85,26 +86,27 @@ namespace BlockChainCourse.BlockWithProofOfWork
             }
         }
 
-        public string CalculateTransactionHash()
+        public string CalculateTransactionHash(IKeyStore keyStoreFromAddress)
         {
-            return CalculateTransactionHash(null);
+            return CalculateTransactionHash(null, keyStoreFromAddress);
         }
 
-        public string CalculateTransactionHash(string previousTransactionId)
+        public string CalculateTransactionHash(string previousTransactionId, IKeyStore KeyStoreFromAddress)
         {
             string blockheader = CreatedDate.ToString() + previousTransactionId;
-            string transactionHash = ToAddress + ClaimNumber + SettlementAmount + SettlementDate + CarRegistration + Mileage + ClaimType;
+            string transactionHash = ToAddress + FromAddressPublicKey + ClaimNumber + SettlementAmount + SettlementDate + CarRegistration + Mileage + ClaimType;
             string combined = transactionHash + blockheader;
 
             string completeTransactionHash;
 
-            if (KeyStoreFromAddress == null)
+            if (KeyStoreFromAddress == null || true)
             {
                 completeTransactionHash = Convert.ToBase64String(HashData.ComputeHashSha256(Encoding.UTF8.GetBytes(combined)));
             }
             else
             {
-                completeTransactionHash = Convert.ToBase64String(Hmac.ComputeHmacsha256(Encoding.UTF8.GetBytes(combined), KeyStoreFromAddress.AuthenticatedHashKey));
+                //Not sure need this
+                completeTransactionHash = Convert.ToBase64String(Hmac.ComputeHmacSha256(Encoding.UTF8.GetBytes(combined), KeyStoreFromAddress.AuthenticatedHashKey));
             }
 
             return completeTransactionHash;
@@ -125,14 +127,28 @@ namespace BlockChainCourse.BlockWithProofOfWork
         {
             bool isValid = true;
             bool validSignature = false;
+            bool validPublicKey = false;
 
-            validSignature = KeyStoreFromAddress.Verify(TransactionId, TransactionSignature);
+            var keyStoreFromAddress = new KeyStore(FromAddressPublicKey);
+            if (PreviousTransaction != null)
+            {
+                if (keyStoreFromAddress.ExportPublicKeyToX509PEM() == PreviousTransaction.ToAddress)
+                {
+                    validPublicKey = true;
+                }
+            }
+            else
+            {
+                validPublicKey = true;
+            }
+
+            validSignature = keyStoreFromAddress.Verify(TransactionId, TransactionSignature);
 
             // Is this a valid block and transaction
-            string newTransactionHash = CalculateTransactionHash(prevTransactionId);
+            string newTransactionHash = CalculateTransactionHash(prevTransactionId, null);
             //string newTransactionHash = Convert.ToBase64String(HashData.ComputeHashSha256(Encoding.UTF8.GetBytes(CalculateTransactionHash(prevTransactionId))));
 
-            validSignature = KeyStoreFromAddress.Verify(newTransactionHash, TransactionSignature);
+            validSignature = keyStoreFromAddress.Verify(newTransactionHash, TransactionSignature);
 
             if (newTransactionHash != TransactionId)
             {
@@ -144,7 +160,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
                 isValid |= PreviousTransactionId == prevTransactionId;
             }
 
-            PrintVerificationMessage(verbose, isValid, validSignature);
+            PrintVerificationMessage(verbose, isValid, validSignature, validPublicKey);
 
             // Check the next block by passing in our newly calculated blockhash. This will be compared to the previous
             // hash in the next block. They should match for the chain to be valid.
@@ -156,7 +172,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
             return isValid;
         }
 
-        private void PrintVerificationMessage(bool verbose, bool isValid, bool validSignature)
+        private void PrintVerificationMessage(bool verbose, bool isValid, bool validSignature, bool validPublicKey)
         {
             if (verbose)
             {
@@ -172,6 +188,11 @@ namespace BlockChainCourse.BlockWithProofOfWork
                 if (!validSignature)
                 {
                     Console.WriteLine("Transaction " + TransactionId + " : Invalid Digital Signature");
+                }
+
+                if (!validPublicKey)
+                {
+                    Console.WriteLine("Transaction " + TransactionId + " : Invalid Public Key");
                 }
             }
         }

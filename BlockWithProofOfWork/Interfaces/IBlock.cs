@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace BlockChainCourse.BlockWithProofOfWork
 {
-    public interface IBlock
+    public interface IBlock<T> where T : ITransaction
     {
         // List of transactions
-        List<ITransaction> Transaction { get; }
+        List<T> Transactions { get; }
 
         // Block header data
         int BlockNumber { get; }
@@ -17,10 +17,10 @@ namespace BlockChainCourse.BlockWithProofOfWork
         int Difficulty { get; }
         int Nonce { get; }
 
-        void AddTransaction(ITransaction transaction);
+        void AddTransaction(T transaction);
         string CalculateBlockHash(string previousBlockHash);
-        void SetBlockHash(IBlock parent);
-        IBlock NextBlock { get; set; }
+        void SetBlockHash(IBlock<T> parent);
+        IBlock<T> NextBlock { get; set; }
         bool IsValidChain(string prevBlockHash, bool verbose);
         IKeyStore KeyStore { get; }
     }
