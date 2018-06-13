@@ -1,20 +1,15 @@
-﻿using System;
+﻿using BlockChainCourse.BlockWithProofOfWork.Interfaces;
+using System;
+using System.Collections.Generic;
 
 namespace BlockChainCourse.BlockWithProofOfWork
 {
     public interface IAddressTransaction : ITransaction
     {
-        //input
-        string PreviousTransactionId { get; set; }
-        IAddressTransaction PreviousTransaction { get; set; }
-        string TransactionSignature { get; }
-        //IKeyStore KeyStoreFromAddress { get; } //This should be 
-        string FromAddressPublicKey { get; }
+        IList<IInput> Inputs { get; }
+        IList<IOutput> Outputs { get; }
 
-        //output
-        string ToAddress { get; } //ToAddress publickey
-
-        void SetTransactionHash(IAddressTransaction parent, IKeyStore KeyStoreFromAddress);
-        bool IsValidChain(string prevBlockHash, bool verbose);
+        void SetTransactionHash(IKeyStore KeyStoreFromAddress);
+        bool IsValid(bool verbose);
     }
 }

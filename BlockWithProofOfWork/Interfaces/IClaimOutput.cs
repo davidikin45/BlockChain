@@ -1,8 +1,9 @@
-﻿using System;
+﻿using BlockChainCourse.BlockWithProofOfWork.Interfaces;
+using System;
 
 namespace BlockChainCourse.BlockWithProofOfWork
 {
-    public interface IClaimTransaction : IAddressTransaction
+    public interface IClaimOutput : IOutput
     {
         string ClaimNumber { get; set; }
         decimal SettlementAmount { get; set; }

@@ -35,7 +35,7 @@ namespace BlockChainCourse.Cryptography
             return retString;
         }
 
-        public static string ComputeHashSha256Base64StringWithHMACKey(string toBeHashed)
+        public static string ComputeHashSha256Base64String(string toBeHashed)
         {
             var message = Encoding.UTF8.GetBytes(toBeHashed);
 

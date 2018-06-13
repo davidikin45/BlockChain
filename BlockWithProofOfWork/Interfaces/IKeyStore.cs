@@ -8,5 +8,6 @@ namespace BlockChainCourse.BlockWithProofOfWork
         string Sign(string hash);
         bool Verify(string hash, string signature);
         string ExportPublicAddress();
+        string ExportPublicKey();
     }
 }

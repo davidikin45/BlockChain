@@ -7,9 +7,9 @@ using Clifton.Blockchain;
 
 namespace BlockChainCourse.BlockWithProofOfWork
 {
-    public class Block : IBlock<IClaimTransaction>
+    public class Block : IBlock<IAddressTransaction>
     {
-        public List<IClaimTransaction> Transactions { get; private set; }
+        public List<IAddressTransaction> Transactions { get; private set; }
 
         // Set as part of the block creation process.
         public int BlockNumber { get; private set; }
@@ -20,7 +20,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
         public int Difficulty { get; private set; }
         public int Nonce { get; private set; }
 
-        public IBlock<IClaimTransaction> NextBlock { get; set; }
+        public IBlock<IAddressTransaction> NextBlock { get; set; }
         private MerkleTree merkleTree = new MerkleTree();
         public IKeyStore KeyStore { get; private set; }
 
@@ -29,7 +29,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
             BlockNumber = blockNumber;
 
             CreatedDate = DateTime.UtcNow;
-            Transactions = new List<IClaimTransaction>();
+            Transactions = new List<IAddressTransaction>();
             Difficulty = miningDifficulty;
         }
 
@@ -38,12 +38,12 @@ namespace BlockChainCourse.BlockWithProofOfWork
             BlockNumber = blockNumber;
 
             CreatedDate = DateTime.UtcNow;
-            Transactions = new List<IClaimTransaction>();
+            Transactions = new List<IAddressTransaction>();
             KeyStore = keystore;
             Difficulty = miningDifficulty;
         }
 
-        public void AddTransaction(IClaimTransaction transaction)
+        public void AddTransaction(IAddressTransaction transaction)
         {
             Transactions.Add(transaction);
         }
@@ -68,7 +68,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
         }
 
         // Set the block hash
-        public void SetBlockHash(IBlock<IClaimTransaction> parent)
+        public void SetBlockHash(IBlock<IAddressTransaction> parent)
         {
             if (parent != null)
             {
@@ -99,7 +99,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
 
             foreach (ITransaction txn in Transactions)
             {
-                merkleTree.AppendLeaf(MerkleHash.Create(txn.TransactionId));
+                merkleTree.AppendLeaf(MerkleHash.Create(txn.CalculateTransactionHash(null)));
             }
 
             merkleTree.BuildTree();
@@ -174,7 +174,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
                 isValid |= PreviousBlockHash == prevBlockHash;
             }
 
-            PrintVerificationMessage(verbose, isValid, validSignature);
+            PrintVerificationMessage(verbose, isValid, validSignature, KeyStore != null);
 
             // Check the next block by passing in our newly calculated blockhash. This will be compared to the previous
             // hash in the next block. They should match for the chain to be valid.
@@ -186,7 +186,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
             return isValid;
         }
 
-        private void PrintVerificationMessage(bool verbose, bool isValid, bool validSignature)
+        private void PrintVerificationMessage(bool verbose, bool isValid, bool validSignature, bool privateBlockChain)
         {
             if (verbose)
             {
@@ -199,7 +199,7 @@ namespace BlockChainCourse.BlockWithProofOfWork
                     Console.WriteLine("Block Number " + BlockNumber + " : PASS VERIFICATION");
                 }
 
-                if (!validSignature)
+                if (!validSignature && privateBlockChain)
                 {
                     Console.WriteLine("Block Number " + BlockNumber + " : Invalid Digital Signature");
                 }

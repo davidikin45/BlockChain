@@ -16,20 +16,21 @@ namespace BlockChainCourse.BlockWithProofOfWork
             DigitalSignature.AssignNewKey();
         }
 
-        public KeyStore(string publicKeyToX509PEM)
+        public KeyStore(string publicKeyToX509PEM, string privateKeyToRSAPEM)
         {
             DigitalSignature = new DigitalSignature();
+            DigitalSignature.AssignPrivateKey(privateKeyToRSAPEM);
             DigitalSignature.AssignPublicKey(publicKeyToX509PEM);
         }
 
-        public string ExportPublicKeyToX509PEM()
+        public string ExportPublicKey()
         {
             return DigitalSignature.ExportPublicKeyToX509PEM();
         }
 
         public string ExportPublicAddress()
         {
-            return HashData.ComputeHashSha256Base64StringWithHMACKey(ExportPublicKeyToX509PEM());
+            return HashData.ComputeHashSha256Base64String(ExportPublicKey());
         }
 
         public string ExportPrivateKeyToRSAPEM()

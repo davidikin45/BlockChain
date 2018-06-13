@@ -11,6 +11,7 @@ namespace BlockChainCourse.Cryptography
 
         public void AssignNewKey()
         {
+            //256 bytes
             using (var rsa = new RSACryptoServiceProvider(2048))
             {
                 rsa.PersistKeyInCsp = false;
@@ -18,6 +19,11 @@ namespace BlockChainCourse.Cryptography
                 _publicKey = Crypto.ExportPublicKeyToX509PEM(rsa);
                 _privateKey = Crypto.ExportPrivateKeyToRSAPEM(rsa);
             }
+        }
+
+        public void AssignPrivateKey(string privateKeyRSAPEM)
+        {
+            _privateKey = privateKeyRSAPEM;
         }
 
         public void AssignPublicKey(string publicKeyToX509PEM)
@@ -48,7 +54,7 @@ namespace BlockChainCourse.Cryptography
 
         public bool VerifySignature(byte[] hashOfDataToSign, byte[] signature)
         {
-            using (var rsa = Crypto.DecodeRsaPublicKey(_publicKey))
+            using (var rsa = Crypto.DecodeX509PublicKey(_publicKey))
             {
                 var rsaDeformatter = new RSAPKCS1SignatureDeformatter(rsa);
                 rsaDeformatter.SetHashAlgorithm("SHA256");
